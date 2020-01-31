@@ -1,0 +1,7 @@
+{
+    "SERVER_PORT":"8000",
+    "DATABASE_HOST":"127.0.0.1",
+    "DATABASE_USERNAME":"username",
+    "DATABASE_PASSWORD":"password",
+    "DATABASE_NAME":"example"
+}
