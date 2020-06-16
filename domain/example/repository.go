@@ -5,11 +5,5 @@ import (
 )
 
 type Repository struct {
-	Db *sql.DB
-}
-
-func NewRepository(Db *sql.DB) *Repository {
-	return &Repository{
-		Db,
-	}
+	Db *sql.DB `inject:"database"`
 }

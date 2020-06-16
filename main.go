@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/yudhasubki/go-skeleton/container"
+
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/yudhasubki/go-skeleton/router"
 
 	conf "github.com/yudhasubki/go-skeleton/config"
@@ -21,9 +24,20 @@ func SetupDatabase(conf conf.Config) *sql.DB {
 }
 
 func main() {
+	ct := container.NewContainer()
 	conf := conf.Get()
-	db := SetupDatabase(*conf)
-	handler := example.NewHandler(db, conf)
-	rh := router.RouterHandler{Handler: handler}
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", conf.ServerPort), router.Router(&rh)))
+	ct.Register("config", conf)
+	ct.Register("database", SetupDatabase(*conf))
+	ct.Register("repository", new(example.Repository))
+	ct.Register("service", new(example.Service))
+	ct.Register("handler", new(example.Handler))
+
+	routerHandler := router.RouterHandler{}
+	ct.Register("router", routerHandler)
+	err := ct.Start()
+	if err != nil {
+		log.Fatalf("error starting : %v", err)
+	}
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", conf.ServerPort), router.Router(&routerHandler)))
 }

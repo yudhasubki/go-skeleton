@@ -1,18 +1,18 @@
 package example
 
 import (
-	"database/sql"
+	"fmt"
 
 	conf "github.com/yudhasubki/go-skeleton/config"
 )
 
 type Service struct {
-	Repo   *Repository
-	Config *conf.Config
+	Repo   *Repository  `inject:"repository"`
+	Config *conf.Config `inject:"config"`
 }
 
-func NewService(Db *sql.DB, cfg *conf.Config) *Service {
-	return &Service{
-		Repo: NewRepository(Db),
-	}
+func (s *Service) OnStart() {
+	fmt.Println("invoke...")
 }
+
+func (s *Service) OnShutdown() {}

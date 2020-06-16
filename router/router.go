@@ -6,7 +6,7 @@ import (
 )
 
 type RouterHandler struct {
-	Handler *example.Handler
+	Handler *example.Handler `inject:"handler"`
 }
 
 func Router(rh *RouterHandler) *mux.Router {
