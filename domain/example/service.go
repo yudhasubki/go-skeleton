@@ -1,8 +1,6 @@
 package example
 
 import (
-	"fmt"
-
 	conf "github.com/yudhasubki/go-skeleton/config"
 )
 
@@ -11,8 +9,6 @@ type Service struct {
 	Config *conf.Config `inject:"config"`
 }
 
-func (s *Service) OnStart() {
-	fmt.Println("invoke...")
-}
+func (s *Service) OnStart() {}
 
 func (s *Service) OnShutdown() {}
