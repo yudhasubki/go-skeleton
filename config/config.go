@@ -14,6 +14,8 @@ type Config struct {
 	DatabasePassword string `mapstructure:"database_password"`
 	DatabaseName     string `mapstructure:"database_name"`
 
+	ShutdownPeriod int `mapstructure:"shutdown_period"`
+
 	NsqHost string `mapstructure:"nsq_host"`
 	NsqPort string `mapstructure:"nsq_port"`
 }

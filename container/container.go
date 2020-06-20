@@ -14,13 +14,14 @@ type ServiceInvoke interface {
 
 type ServiceRegistry struct {
 	injector inject.Graph
-	services []*inject.Object
+	objects  []*inject.Object
+	services []interface{}
 	status   chan bool
 }
 
 func (s *ServiceRegistry) Register(app string, svc interface{}) {
 	go s.HasImplementServiceInvoke(svc, s.status)
-	s.services = append(s.services, &inject.Object{Value: svc, Name: app})
+	s.objects = append(s.objects, &inject.Object{Value: svc, Name: app})
 	if <-s.status {
 		log.Printf("Invoke %v finished...", reflect.TypeOf(svc).Elem())
 	}
@@ -30,13 +31,14 @@ func (s *ServiceRegistry) HasImplementServiceInvoke(svc interface{}, status chan
 	switch obj := svc.(type) {
 	case ServiceInvoke:
 		obj.OnStart()
+		s.services = append(s.services, svc)
 		status <- true
 	}
 	status <- false
 }
 
 func (s *ServiceRegistry) Bind() error {
-	for _, svc := range s.services {
+	for _, svc := range s.objects {
 		err := s.injector.Provide(svc)
 		if err != nil {
 			return err
@@ -56,6 +58,20 @@ func (s *ServiceRegistry) Start() error {
 		return err
 	}
 	return nil
+}
+
+func (s *ServiceRegistry) Shutdown() {
+	if len(s.services) == 0 {
+		return
+	}
+
+	log.Println("Starting shutdown...")
+	for _, svc := range s.services {
+		switch obj := svc.(type) {
+		case ServiceInvoke:
+			obj.OnShutdown()
+		}
+	}
 }
 
 func NewContainer() *ServiceRegistry {

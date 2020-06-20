@@ -42,5 +42,6 @@ func main() {
 	}
 
 	serve := server.Server{Config: conf, Router: &routerHandler, DB: db}
+	serve.EnableGracefulShutdown(*ct)
 	serve.Serve()
 }
