@@ -20,14 +20,14 @@ type ServiceRegistry struct {
 }
 
 func (s *ServiceRegistry) Register(app string, svc interface{}) {
-	go s.HasImplementServiceInvoke(svc, s.status)
+	go s.Ready(svc, s.status)
 	s.objects = append(s.objects, &inject.Object{Value: svc, Name: app})
 	if <-s.status {
 		log.Printf("Invoke %v finished...", reflect.TypeOf(svc).Elem())
 	}
 }
 
-func (s *ServiceRegistry) HasImplementServiceInvoke(svc interface{}, status chan bool) {
+func (s *ServiceRegistry) Ready(svc interface{}, status chan bool) {
 	switch obj := svc.(type) {
 	case ServiceInvoke:
 		obj.OnStart()
