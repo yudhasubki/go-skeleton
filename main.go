@@ -27,8 +27,9 @@ func SetupDatabase(conf conf.Config) *sql.DB {
 func main() {
 	ct := container.NewContainer()
 	conf := conf.Get()
+	db := SetupDatabase(*conf)
 	ct.Register("config", conf)
-	ct.Register("database", SetupDatabase(*conf))
+	ct.Register("database", db)
 	ct.Register("repository", new(example.Repository))
 	ct.Register("service", new(example.Service))
 	ct.Register("handler", new(example.Handler))
@@ -40,6 +41,6 @@ func main() {
 		log.Fatalf("error starting : %v", err)
 	}
 
-	serve := server.Server{Config: conf, Router: &routerHandler}
+	serve := server.Server{Config: conf, Router: &routerHandler, DB: db}
 	serve.Serve()
 }

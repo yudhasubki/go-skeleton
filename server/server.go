@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/yudhasubki/go-skeleton/config"
@@ -9,6 +10,7 @@ import (
 )
 
 type Server struct {
+	DB     *sql.DB
 	Config *config.Config
 	Router *router.RouterHandler
 }
@@ -20,5 +22,9 @@ func (s *Server) Serve() {
 }
 
 func (s *Server) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	if err := s.DB.Ping(); err != nil {
+		api.Write(w, api.Response("500", "server is unhealthy", nil))
+		return
+	}
 	api.Write(w, api.Response("200", "server is alive", nil))
 }
