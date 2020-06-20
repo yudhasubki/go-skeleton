@@ -11,7 +11,5 @@ type RouterHandler struct {
 
 func Router(rh *RouterHandler) *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/health", rh.Handler.Health).Methods("GET")
-
 	return router
 }

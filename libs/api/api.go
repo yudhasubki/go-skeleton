@@ -22,7 +22,7 @@ func Response(code, message string, data interface{}) *API {
 	return &resp
 }
 
-func Write(w http.ResponseWriter, r *Response) {
+func Write(w http.ResponseWriter, r *API) {
 	js, err := json.Marshal(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

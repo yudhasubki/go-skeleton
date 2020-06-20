@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
+
+	"github.com/yudhasubki/go-skeleton/server"
 
 	"github.com/yudhasubki/go-skeleton/container"
 
@@ -39,5 +40,6 @@ func main() {
 		log.Fatalf("error starting : %v", err)
 	}
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", conf.ServerPort), router.Router(&routerHandler)))
+	serve := server.Server{Config: conf, Router: &routerHandler}
+	serve.Serve()
 }
