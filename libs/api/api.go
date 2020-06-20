@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"reflect"
+	"strconv"
 )
 
 type API struct {
@@ -29,6 +30,8 @@ func Write(w http.ResponseWriter, r *API) {
 		return
 	}
 
+	httpCode, _ := strconv.Atoi(r.Code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpCode)
 	w.Write(js)
 }
