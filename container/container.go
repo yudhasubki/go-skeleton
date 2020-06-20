@@ -27,16 +27,6 @@ func (s *ServiceRegistry) Register(app string, svc interface{}) {
 	}
 }
 
-func (s *ServiceRegistry) Ready(svc interface{}, status chan bool) {
-	switch obj := svc.(type) {
-	case ServiceInvoke:
-		obj.OnStart()
-		s.services = append(s.services, svc)
-		status <- true
-	}
-	status <- false
-}
-
 func (s *ServiceRegistry) Bind() error {
 	for _, svc := range s.objects {
 		err := s.injector.Provide(svc)
@@ -45,6 +35,16 @@ func (s *ServiceRegistry) Bind() error {
 		}
 	}
 	return nil
+}
+
+func (s *ServiceRegistry) Ready(svc interface{}, status chan bool) {
+	switch obj := svc.(type) {
+	case ServiceInvoke:
+		obj.OnStart()
+		s.services = append(s.services, svc)
+		status <- true
+	}
+	status <- false
 }
 
 func (s *ServiceRegistry) Start() error {
