@@ -2,38 +2,35 @@ package config
 
 import (
 	"log"
+	"sync"
 
-	"github.com/spf13/viper"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Config struct {
-	ServerPort string `mapstructure:"server_port"`
+	ServerPort string `envconfig:"server_port"`
 
-	DatabaseHost     string `mapstructure:"database_host"`
-	DatabaseUsername string `mapstructure:"database_username"`
-	DatabasePassword string `mapstructure:"database_password"`
-	DatabaseName     string `mapstructure:"database_name"`
+	DatabaseHost     string `envconfig:"database_host"`
+	DatabaseUsername string `envconfig:"database_username"`
+	DatabasePassword string `envconfig:"database_password"`
+	DatabaseName     string `envconfig:"database_name"`
 
-	ShutdownPeriod int `mapstructure:"shutdown_period"`
+	ShutdownPeriod int `envconfig:"shutdown_period"`
 
-	NsqHost string `mapstructure:"nsq_host"`
-	NsqPort string `mapstructure:"nsq_port"`
+	NsqHost string `envconfig:"nsq_host"`
+	NsqPort string `envconfig:"nsq_port"`
 }
 
 var conf Config
 
 func Get() *Config {
-	viper.SetConfigName("dev.config")
-	viper.SetConfigType("json")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	once := sync.Once{}
+	once.Do(func() {
+		err := envconfig.Process("", &conf)
+		if err != nil {
+			log.Fatalf("err conf : %v", err)
+		}
+	})
 
-	err = viper.Unmarshal(&conf)
-	if err != nil {
-		log.Fatalln(err)
-	}
 	return &conf
 }

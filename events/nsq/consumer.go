@@ -25,16 +25,17 @@ type NsqEventConsumer struct {
 func (e *NsqEventConsumer) Start() {
 	log.Println("Starting nsq consumer : topic %v - channel %v", e.Topic, e.Channel)
 	e.nsq = nsq.NewConfig()
-	e.consumer, err := nsq.NewConsumer(e.Topic, e.Channel, e.nsq)
+	consumer, err := nsq.NewConsumer(e.Topic, e.Channel, e.nsq)
 	if err != nil {
 		log.Fatalf("error creating consumer %v", err.Error())
 		return
 	}
+	e.consumer = consumer
 }
 
 func (e *NsqEventConsumer) Consume() error {
 	e.consumer.AddHandler(nsq.HandlerFunc(e.HandleMessage))
-	err = e.consumer.ConnectToNSQD(fmt.Sprintf("%s:%s", e.Config.NsqHost, e.Config.NsqPort))
+	err := e.consumer.ConnectToNSQD(fmt.Sprintf("%s:%s", e.Config.NsqHost, e.Config.NsqPort))
 	if err != nil {
 		log.Printf("err connect to nsqd : %v \n", err)
 		return err
@@ -43,7 +44,7 @@ func (e *NsqEventConsumer) Consume() error {
 	return nil
 }
 
-func (e *NsqEventConsumer) Stop() error {
+func (e *NsqEventConsumer) Stop() {
 	log.Println("stoping consumer...")
 	e.consumer.Stop()
 }
